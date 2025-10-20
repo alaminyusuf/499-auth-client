@@ -3,6 +3,7 @@ import React from 'react';
 import { AuthProvider, useAuth } from '../auth/Authcontext';
 import AuthStack from '../navigations/AuthStack';
 import AppStack from '../navigations/AppStack';
+import AdminStack from '../navigations/AdminStack';
 import { ActivityIndicator, View, Text } from 'react-native';
 
 const LoadingSplash = () => (
@@ -14,12 +15,19 @@ const LoadingSplash = () => (
 
 
 const RootNavigator = () => {
-  const { isLoading, verifiedToken } = useAuth(); 
+  const { isLoading, verifiedToken, adminToken } = useAuth(); 
+
 
   if (isLoading) {
-      return <LoadingSplash />;
+    return <LoadingSplash />;
+  } else if(adminToken) {
+    return<AdminStack />
+  } else if(verifiedToken) {
+    return <AppStack />
   }
-  return verifiedToken ? <AppStack /> : <AuthStack />;
+  else {
+    return <AuthStack />
+  }
 };
 
 
