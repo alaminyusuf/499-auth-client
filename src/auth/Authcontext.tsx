@@ -10,9 +10,11 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [userToken, setUserToken] = useState(null);
   const [verifiedToken, setVerifiedToken] = useState(null);
+  const [adminToken, setAdminToken] = useState(null)
 
   // --- 1. Initial Load Check ---
   useEffect(() => {
+    let role
     const bootstrapAsync = async () => {
       let token = null;
       try {
@@ -37,6 +39,11 @@ export const AuthProvider = ({ children }) => {
     hanldleVerifySucces: async (token) => {
       await SecureStore.setItemAsync('verifiedToken', token);
       setVerifiedToken(token);
+    },
+
+    hanldleAdminSucces: async (token) => {
+      await SecureStore.setItemAsync('adminToken', token);
+      setAdminToken(token);
     },
 
     // Sign Up Logic
@@ -66,7 +73,11 @@ export const AuthProvider = ({ children }) => {
           headers: { Authorization: `Bearer ${userToken}`, 
           'Content-Type': 'application/json'  },
         });
-        await authContext.hanldleVerifySucces(response.data.token);
+        if(response.data.role == 'admin') {
+          await authContext.hanldleAdminSucces(response.data.token)
+        }else {
+          await authContext.hanldleVerifySucces(response.data.token);
+        }
         return {success: true}
         
       } catch (error) {
@@ -87,7 +98,6 @@ export const AuthProvider = ({ children }) => {
 
       }
     } catch(error) {
-      console.error(error)
       return { success: false, message: error.response.data.message || 'Password change request failed'
       }
     }
@@ -111,12 +121,27 @@ export const AuthProvider = ({ children }) => {
     signOut: async () => {
       await SecureStore.deleteItemAsync('userToken');
       await SecureStore.deleteItemAsync('verifiedToken');
+      await SecureStore.deleteItemAsync('adminToken');
       setUserToken(null);
       setVerifiedToken(null);
+      setAdminToken(null)
+    },
+
+    addEmployee: async (data) => {
+      try {
+        const response = await axios.post(`${API_URL}/admin/add-employee`, data, 
+        {
+          headers: { Authorization: `Bearer ${adminToken}`, 
+          'Content-Type': 'application/json'  },
+        })
+         return { success: true };
+       } catch (error) {
+         return { success: false, message: error.response.data.message || 'Signup failed' };
+       }
     },
     
-    userToken, verifiedToken
-  }), [userToken, isLoading, verifiedToken]);
+    userToken, verifiedToken, adminToken
+  }), [userToken, isLoading, verifiedToken, adminToken]);
 
   return (
     <AuthContext.Provider value={authContext}>
