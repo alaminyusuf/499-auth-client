@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, Button, Alert } from 'react-native';
 import { useAuth } from '../auth/Authcontext';
 import axios from 'axios';
 
@@ -24,7 +24,7 @@ const TwoFactorSetupScreen = ({ navigation }) => {
         
       } catch (error) {
         Alert.alert('Error', 'Failed to load 2FA setup details.');
-        navigation.goBack(); // Return to settings on failure
+        navigation.goBack(); 
       } finally {
         setLoading(false);
       }
@@ -43,7 +43,7 @@ const TwoFactorSetupScreen = ({ navigation }) => {
         
       }
       if(response.success) {
-        navigation.navigate('Home');
+        navigation.navigate('Dashboard');
       }
     } catch (error) {
       Alert.alert('Verification Failed', error?.data?.message || 'Invalid code. Please try again.');
