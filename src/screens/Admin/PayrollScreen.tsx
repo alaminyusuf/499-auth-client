@@ -37,9 +37,6 @@ const PayrollHistoryScreen = () => {
         <Text style={styles.label}>Employee:</Text> {item.employee.name} ({item.employee.email})
       </Text>
       <Text>
-        <Text style={styles.label}>Net Pay:</Text> ${item.netPay.toFixed(2)}
-      </Text>
-      <Text>
         <Text style={styles.label}>Gross Pay:</Text> ${item.grossPay.toFixed(2)}
       </Text>
       <Text style={{ color: item.status === 'RECORDED' ? 'green' : 'red' }}>
